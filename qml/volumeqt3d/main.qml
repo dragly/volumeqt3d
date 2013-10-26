@@ -18,37 +18,15 @@ Viewport {
     }
 
     Item3D {
+        cullFaces: Item3D.CullFrontFaces
         mesh: Mesh { source: "cube.obj" }
         effect: VolumeShaderProgram {
             property real multiplier: 2
 //            texture: "qtlogo.png"
             texture3D: "head256.raw"
 
-            vertexShader: "
-                        attribute highp vec4 qt_Vertex;
-                        uniform highp mat4 qt_ModelViewProjectionMatrix;
-
-                        attribute highp vec4 qt_MultiTexCoord0;
-                        varying highp vec4 texCoord;
-
-                        void main(void)
-                        {
-                            texCoord = qt_MultiTexCoord0;
-                            gl_Position = qt_ModelViewProjectionMatrix * qt_Vertex;
-                        }
-                        "
-            fragmentShader: "
-                        varying highp vec4 texCoord;
-//                        uniform sampler2D qt_Texture0;
-                        uniform sampler3D myTexture3D;
-                        uniform highp float multiplier;
-
-                        void main(void)
-                        {
-                            mediump vec4 textureColor = texture3D(myTexture3D, texCoord.stp);
-                            gl_FragColor = textureColor;
-                        }
-                        "
+            vertexShaderSource: "qml/volumeqt3d/scalarvolume.vert"
+            fragmentShaderSource: "qml/volumeqt3d/scalarvolume.frag"
         }
     }
 

@@ -44,6 +44,9 @@
 
 #include "qquickeffect.h"
 
+#include <QFile>
+#include <QDebug>
+
 QT_BEGIN_NAMESPACE
 
 class VolumeShaderProgramPrivate;
@@ -55,6 +58,9 @@ class VolumeShaderProgram : public QQuickEffect
     Q_PROPERTY(QString vertexShader READ vertexShader WRITE setVertexShader NOTIFY shaderChanged)
     Q_PROPERTY(QString fragmentShader READ fragmentShader WRITE setFragmentShader NOTIFY shaderChanged)
     Q_PROPERTY(QString texture3D READ texture3D WRITE setTexture3D NOTIFY texture3DChanged)
+    Q_PROPERTY(QString vertexShaderSource READ vertexShaderSource WRITE setVertexShaderSource NOTIFY vertexShaderSourceChanged)
+    Q_PROPERTY(QString fragmentShaderSource READ fragmentShaderSource WRITE setFragmentShaderSource NOTIFY fragmentShaderSourceChanged)
+
 public:
     VolumeShaderProgram(QObject *parent = 0);
     virtual ~VolumeShaderProgram();
@@ -72,6 +78,16 @@ public:
         return m_texture3D;
     }
 
+    QString vertexShaderSource() const
+    {
+        return m_vertexShaderSource;
+    }
+
+    QString fragmentShaderSource() const
+    {
+        return m_fragmentShaderSource;
+    }
+
 public Q_SLOTS:
     void markAllPropertiesDirty();
     void markPropertyDirty(int property);
@@ -83,15 +99,53 @@ public Q_SLOTS:
         }
     }
 
+    void setVertexShaderSource(QString arg)
+    {
+        if (m_vertexShaderSource != arg) {
+            m_vertexShaderSource = arg;
+            QFile file(arg);
+            QString vertexShaderFileContents;
+            if (file.open(QIODevice::ReadOnly)) {
+                vertexShaderFileContents = file.readAll();
+            } else {
+                qWarning() << "VolumeShaderProgram::setVertexShaderSource: could not open " << arg;
+            }
+            setVertexShader(vertexShaderFileContents);
+            emit vertexShaderSourceChanged(arg);
+        }
+    }
+
+    void setFragmentShaderSource(QString arg)
+    {
+        if (m_fragmentShaderSource != arg) {
+            m_fragmentShaderSource = arg;
+            QFile file(arg);
+            QString fragmentShaderFileContents;
+            if (file.open(QIODevice::ReadOnly)) {
+                fragmentShaderFileContents = file.readAll();
+            } else {
+                qWarning() << "VolumeShaderProgram::setFragmentShaderSource: could not open " << arg;
+            }
+            setFragmentShader(fragmentShaderFileContents);
+            emit fragmentShaderSourceChanged(arg);
+        }
+    }
+
 Q_SIGNALS:
     void finishedLoading();
     void shaderChanged();
     void texture3DChanged(QString arg);
 
+    void vertexShaderSourceChanged(QString arg);
+
+    void fragmentShaderSourceChanged(QString arg);
+
 private:
     VolumeShaderProgramPrivate *d;
     QString m_texture3D;
-//    int m_texture3DuniformValue;
+    //    int m_texture3DuniformValue;
+    QString m_vertexShaderSource;
+    QString m_fragmentShaderSource;
 };
 
 QT_END_NAMESPACE

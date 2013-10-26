@@ -30,4 +30,6 @@ HEADERS += \
     volumeeffect.h \
     volumeeffect_p.h
 
-OTHER_FILES +=
+OTHER_FILES += \
+    qml/volumeqt3d/scalarvolume.frag \
+    qml/volumeqt3d/scalarvolume.vert
