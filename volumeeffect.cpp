@@ -311,7 +311,7 @@ void VolumeShaderProgramEffect::afterLink()
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
     glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_SHORT,data);
 
-    program()->setUniformValue(m_texture3DuniformValue, 0);
+    program()->setUniformValue(m_texture3DuniformValue, g_volTexObj);
     // End Texture3D stuff
 
     propertyIdsToUniformLocations.clear();
