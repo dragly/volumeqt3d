@@ -27,13 +27,6 @@ Viewport {
         position: Qt.vector3d(-10,20,-5)
     }
 
-    Cube {
-        x: 1.0
-        effect: Effect {
-            color: Qt.rgba(1.0, 0.5, 0.5, 0.2);
-        }
-    }
-
     Item3D {
         cullFaces: Item3D.CullDisabled
         mesh: Mesh {
