@@ -1,9 +1,6 @@
 uniform sampler3D myTexture3D;
-uniform highp mat4 qt_ModelViewProjectionMatrix; // = MVP
 uniform highp mat4 qt_ModelViewMatrix; // = MV
-uniform highp mat4 qt_ProjectionMatrix; // = MV
 
-varying highp vec4 qt_TexCoord0;
 varying highp vec4 entryPoint; // = EntryPoint
 varying highp vec4 entryPointTexCoord; // = EntryPoint
 
