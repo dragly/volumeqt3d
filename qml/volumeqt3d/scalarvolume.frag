@@ -21,7 +21,7 @@ void main(void)
     vec3 voxelCoord = entryPointTexCoord;
     vec4 colorAcummulated = vec4(1.0, 1.0, 1.0, 0.0);
     float traversedLength = 0.0;
-    for(int i = 0; i < 1.0 / stepSize; i++) {
+    for(int i = 0; i < 1.732 / stepSize; i++) { // 1.732 = cube diagonal
         voxelCoord += deltaDir;
         vec3 voxelValue = texture3D(myTexture3D, voxelCoord);
         colorAcummulated += vec4(0.0, 0.0, 0.0, voxelValue.x) * stepSize * 2;
