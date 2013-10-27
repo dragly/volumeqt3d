@@ -5,6 +5,7 @@ uniform highp mat4 qt_ModelViewProjectionMatrix; // = MVP
 
 varying highp vec4 qt_TexCoord0;
 varying highp vec4 entryPoint; // = EntryPoint
+varying highp vec4 entryPointTexCoord; // = EntryPoint
 varying highp vec4 exitPointCoord; // = EntryPointCoord
 //varying highp vec4 eyeCoord;
 //varying highp vec4 texCoord3D;
@@ -15,5 +16,6 @@ void main(void)
     qt_TexCoord0 = qt_MultiTexCoord0;
 //    texCoord3D = qt_Custom0;
     entryPoint = qt_Vertex;
-    exitPointCoord = gl_Position;
+    entryPointTexCoord = qt_Vertex; // Should be set to a texture coordinate
+//    exitPointCoord = gl_Position;
 }

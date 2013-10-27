@@ -25,8 +25,9 @@ Viewport {
 
     Item3D {
         cullFaces: Item3D.CullFrontFaces
-        mesh: Mesh { source: "cube.obj" }
-//        mesh: SphereMesh {}
+        mesh: Mesh {
+            source: "cube.obj"
+        }
         effect: VolumeShaderProgram {
             id: shaderProgram
             texture3D: "head256.raw"
