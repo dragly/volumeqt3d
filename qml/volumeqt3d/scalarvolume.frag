@@ -23,13 +23,13 @@ void main(void)
     for(int i = 0; i < 1.732 / stepSize; i++) { // 1.732 = cube diagonal
         voxelCoord += deltaDir;
         vec3 voxelValue = texture3D(myTexture3D, voxelCoord);
-        colorAcummulated += voxelValue.x * stepSize * 200;
+        colorAcummulated += voxelValue.x * stepSize;
         if(voxelCoord.x > 1.0 || voxelCoord.y > 1.0 || voxelCoord.z > 1.0
                 || voxelCoord.x < 0.0 || voxelCoord.y < 0.0 || voxelCoord.z < 0.0) {
             break;
         }
     }
-    gl_FragColor = vec4(1.0, 1.0, 1.0, colorAcummulated);
+    gl_FragColor = vec4(1.0, 1.0, 1.0, colorAcummulated * 100);
 
     // Testing:
     //    gl_FragColor = vec4(normalize(eye).xyz, 1.0);
