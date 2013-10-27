@@ -28,6 +28,7 @@ void main(void)
 
 
 //    vec3 eye = vec3(eyeX, eyeY, eyeZ);
+    float stepSize = 0.01;
     mat4 inverseMatrix = inverse(qt_ModelViewMatrix);
     vec4 eyeCoord = inverseMatrix[3];
 //    vec3 eye = normalize(-eyeCoord.xyz / eyeCoord.w);
@@ -35,20 +36,21 @@ void main(void)
     vec3 exitPoint = vec3(gl_FragCoord.xy / vec2(1000, 800), 0);
     exitPoint += eye;
     gl_FragColor = vec4(1.0, 1.0, exitPoint.z, 1.0);
-    vec3 direction = -exitPoint + entryPoint;
+    vec3 direction = exitPoint - entryPoint;
     float directionLength = length(direction);
-    vec3 deltaDir = normalize(direction) * 0.01;
+    vec3 deltaDir = normalize(direction) * stepSize;
     float deltaDirLength = length(deltaDir);
     entryPoint += vec4(0.5, 0.5, 0.5, 0.0);
     vec3 voxelCoord = entryPoint;
     vec4 colorAcummulated = vec4(0.0, 0.0, 0.0, 1.0);
     float traversedLength = 0.0;
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < 1.0 / stepSize; i++) {
         voxelCoord += deltaDir;
         vec3 voxelValue = texture3D(myTexture3D, voxelCoord);
-        colorAcummulated += vec4(voxelValue.xyx * 0.02, 0.0);
+        colorAcummulated += vec4(voxelValue.xyx, 0.0) * stepSize;
         traversedLength += deltaDirLength;
-        if(traversedLength > 1.0) {
+        if(voxelCoord.x > 1.0 || voxelCoord.y > 1.0 || voxelCoord.z > 1.0
+                || voxelCoord.x < 0.0 || voxelCoord.y < 0.0 || voxelCoord.z < 0.0) {
             break;
         }
     }

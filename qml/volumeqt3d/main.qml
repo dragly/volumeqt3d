@@ -24,7 +24,7 @@ Viewport {
     }
 
     Item3D {
-//        cullFaces: Item3D.CullFrontFaces
+        cullFaces: Item3D.CullFrontFaces
         mesh: Mesh { source: "cube.obj" }
 //        mesh: SphereMesh {}
         effect: VolumeShaderProgram {
