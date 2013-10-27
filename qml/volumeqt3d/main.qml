@@ -16,11 +16,22 @@ Viewport {
 
     camera: Camera {
         id: myCamera
-        eye: Qt.vector3d(5.0, 5.0, 5.0)
+        center: Qt.vector3d(0.0, 0.0, 0.0)
+        eye: Qt.vector3d(1.0, 1.0, 1.0)
+        nearPlane: 0.01
+        farPlane: 100
+        fieldOfView: 120
     }
 
     light: Light {
-        position: Qt.vector3d(10,20,5)
+        position: Qt.vector3d(-10,20,-5)
+    }
+
+    Cube {
+        x: 1.0
+        effect: Effect {
+            color: Qt.rgba(1.0, 0.5, 0.5, 0.2);
+        }
     }
 
     Item3D {
