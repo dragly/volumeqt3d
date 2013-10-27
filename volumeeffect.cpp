@@ -51,6 +51,10 @@
 #include <QQmlContext>
 #include <iostream>
 
+#include <cmath>
+
+#include <boost/math/special_functions/spherical_harmonic.hpp>
+
 using namespace std;
 
 /*!
@@ -315,6 +319,29 @@ void VolumeShaderProgramEffect::afterLink()
         cout << "OK: read .raw file successed" << endl;
     }
     fclose(fp);
+
+//    for(GLuint i = 0; i < w; i++) {
+//        for(GLuint j = 0; j < h; j++) {
+//            for(GLuint k = 0; k < d; k++) {
+//                double x = -1 + i / double(w);
+//                double y = -1 + j / double(h);
+//                double z = -1 + k / double(d);
+
+//                double xw = exp(-x*x)*3*M_PI;
+//                double yw = exp(-0.2*y*y)*M_PI;
+//                double zw = 3*M_PI;
+
+//                double fx = sin(xw*x)*sin(xw*x);
+//                double fy = sin(yw*y)*sin(yw*y)*exp(-y*y);
+//                double fz = sin(zw*z)*sin(zw*z)*exp(-z*z);
+
+//                double result = fx * fy * fz;
+//                data[i*h*d + j*d + k] = 255 * result;
+////                                qDebug() << r << " " << theta << " " << phi << " " << data[i*h*d + j*d + k];
+//            }
+//        }
+//    }
+//    qDebug() << "Data loaded";
 
     glGenTextures(1, &g_volTexObj);
     // bind 3D texture target

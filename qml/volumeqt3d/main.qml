@@ -24,14 +24,15 @@ Viewport {
     }
 
     Item3D {
-        cullFaces: Item3D.CullFrontFaces
+        cullFaces: Item3D.CullDisabled
         mesh: Mesh {
             source: "cube.obj"
         }
         effect: VolumeShaderProgram {
             id: shaderProgram
+            blending: true
             texture3D: "head256.raw"
-
+            texture: "qtlogo.png"
             vertexShaderSource: "qml/volumeqt3d/scalarvolume.vert"
             fragmentShaderSource: "qml/volumeqt3d/scalarvolume.frag"
         }
