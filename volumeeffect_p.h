@@ -121,6 +121,7 @@ public:
 protected:
     void processTextureUrl(int uniformLocation, QString urlString);
     void afterLink();
+    bool beforeLink();
 
 private:
     void setUniform(int uniformValue, const QImage& image,

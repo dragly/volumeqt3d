@@ -43,6 +43,7 @@
 #include "volumeeffect_p.h"
 #include "qglabstracteffect.h"
 #include <QOpenGLShaderProgram>
+#include <GL/gl.h>
 #include "qglscenenode.h"
 
 #include <QWeakPointer>
@@ -282,6 +283,54 @@ void VolumeShaderProgramEffect::afterLink()
     // Texture3D stuff
     qDebug() << program()->uniformLocation("myTexture3D");
     m_texture3DuniformValue = program()->uniformLocation("myTexture3D");
+//    qDebug() << "Attribute: " << program()->attributeLocation("multiTexCoord3D");
+//    double data[24];
+//    QGLAttributeValue value(3, GL_FLOAT, 0, array.)
+//    glTexCoordPointer(value.tupleSize(), value.type(),
+//                      value.stride(), value.data());
+
+    GLuint g_volTexObj;
+    FILE *fp;
+    GLuint w = 256;
+    GLuint h = 256;
+    GLuint d = 225;
+    size_t size = w * h * d;
+    GLubyte *data = new GLubyte[size];			  // 8bit
+    if (!(fp = fopen("qml/volumeqt3d/head256.raw", "rb")))
+    {
+        cout << "Error: opening .raw file failed" << endl;
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        cout << "OK: open .raw file successed" << endl;
+    }
+    if ( fread(data, sizeof(char), size, fp)!= size)
+    {
+        cout << "Error: read .raw file failed" << endl;
+        exit(1);
+    }
+    else
+    {
+        cout << "OK: read .raw file successed" << endl;
+    }
+    fclose(fp);
+
+    glGenTextures(1, &g_volTexObj);
+    // bind 3D texture target
+    glBindTexture(GL_TEXTURE_3D, g_volTexObj);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    // pixel transfer happens here from client to OpenGL server
+    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE,data);
+
+    delete []data;
+    cout << "volume texture created" << endl;
+    program()->setUniformValue(m_texture3DuniformValue, 0);
     // End Texture3D stuff
 
     propertyIdsToUniformLocations.clear();
@@ -334,6 +383,11 @@ void VolumeShaderProgramEffect::afterLink()
 
     // Refresh everything
     this->setPropertiesDirty();
+}
+
+bool VolumeShaderProgramEffect::beforeLink()
+{
+//    program()->bindAttributeLocation("multiTexCoord3D", 8);
 }
 
 /*!
@@ -399,50 +453,8 @@ static inline void setUniformFromFloatList(QOpenGLShaderProgram *program, int un
 void VolumeShaderProgramEffect::update
     (QGLPainter *painter, QGLPainter::Updates updates)
 {
-
-    GLuint g_volTexObj;
-    painter->glActiveTexture(GL_TEXTURE0 + 0);
-    FILE *fp;
-    GLuint w = 256;
-    GLuint h = 256;
-    GLuint d = 225;
-    size_t size = w * h * d;
-    GLubyte *data = new GLubyte[size];			  // 8bit
-    if (!(fp = fopen("qml/volumeqt3d/head256.raw", "rb")))
-    {
-        cout << "Error: opening .raw file failed" << endl;
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        cout << "OK: open .raw file successed" << endl;
-    }
-    if ( fread(data, sizeof(char), size, fp)!= size)
-    {
-        cout << "Error: read .raw file failed" << endl;
-        exit(1);
-    }
-    else
-    {
-        cout << "OK: read .raw file successed" << endl;
-    }
-    fclose(fp);
-
-    glGenTextures(1, &g_volTexObj);
-    // bind 3D texture target
-    glBindTexture(GL_TEXTURE_3D, g_volTexObj);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-    // pixel transfer happens here from client to OpenGL server
-    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE,data);
-
-    delete []data;
-    cout << "volume texture created" << endl;
-    program()->setUniformValue(m_texture3DuniformValue, 0);
+//    painter->glActiveTexture(GL_TEXTURE0 + 0);
+//    program()->setUniformValue(m_eyeLocation, painter->);
 
     if (changedTextures.count() > 0)
     {

@@ -146,6 +146,7 @@ private:
     //    int m_texture3DuniformValue;
     QString m_vertexShaderSource;
     QString m_fragmentShaderSource;
+    int m_eyeLocation;
 };
 
 QT_END_NAMESPACE

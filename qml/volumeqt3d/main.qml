@@ -4,6 +4,7 @@ import Qt3D 2.0
 import Qt3D.Shapes 2.0
 
 Viewport {
+    id: viewportRoot
     width: 1000
     height: 800
 
@@ -13,16 +14,26 @@ Viewport {
     //        }
     //    }
 
+    camera: Camera {
+        id: myCamera
+        eye: Qt.vector3d(5.0, 5.0, 5.0)
+    }
+
     light: Light {
         position: Qt.vector3d(10,20,5)
     }
 
     Item3D {
-        cullFaces: Item3D.CullFrontFaces
+//        cullFaces: Item3D.CullFrontFaces
         mesh: Mesh { source: "cube.obj" }
+//        mesh: SphereMesh {}
         effect: VolumeShaderProgram {
-            property real multiplier: 2
+            id: shaderProgram
+//            property real multiplier: 2
 //            texture: "qtlogo.png"
+            property vector3d eye: myCamera.eye
+//            property real eyeY: myCamera.eye.y
+//            property real eyeZ: myCamera.eye.z
             texture3D: "head256.raw"
 
             vertexShaderSource: "qml/volumeqt3d/scalarvolume.vert"
