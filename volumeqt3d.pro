@@ -15,9 +15,7 @@ QML_IMPORT_PATH =
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    volumeitem.cpp \
-    volumeeffect.cpp \
-    cubemesh.cpp
+    volumeeffect.cpp
 
 # Installation path
 # target.path =
@@ -27,10 +25,8 @@ include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    volumeitem.h \
     volumeeffect.h \
-    volumeeffect_p.h \
-    cubemesh.h
+    volumeeffect_p.h
 
 OTHER_FILES += \
     qml/volumeqt3d/scalarvolume.frag \

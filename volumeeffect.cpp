@@ -311,7 +311,6 @@ void VolumeShaderProgramEffect::afterLink()
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
     glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_SHORT,data);
 
-    cout << "volume texture created" << endl;
     program()->setUniformValue(m_texture3DuniformValue, 0);
     // End Texture3D stuff
 
@@ -901,21 +900,13 @@ bool VolumeShaderProgram::loadTexture3D() {
     GLushort *data = new GLushort[size];			  // 8bit
     if (!(fp = fopen(m_texture3D.path().toStdString().c_str(), "rb")))
     {
-        cout << "Error: opening .raw file failed" << endl;
+        qWarning() << "Error: Could not open " << m_texture3D;
         return false;
-    }
-    else
-    {
-        cout << "OK: open .raw file successed" << endl;
     }
     if ( fread(data, sizeof(GLushort), size, fp)!= size)
     {
-        cout << "Error: read .raw file failed" << endl;
+        qWarning() << "Error: Could not read " << m_texture3D;
         return false;
-    }
-    else
-    {
-        cout << "OK: read .raw file successed" << endl;
     }
     fclose(fp);
     m_texture3Ddata.data = data;
