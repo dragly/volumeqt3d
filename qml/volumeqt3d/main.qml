@@ -28,7 +28,7 @@ Viewport {
     }
 
     Item3D {
-        cullFaces: Item3D.CullDisabled
+        cullFaces: Item3D.CullFrontFaces
         mesh: Mesh {
             source: "cube.obj"
         }

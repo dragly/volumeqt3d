@@ -12,7 +12,7 @@ void main(void)
     vec4 eyeCoord = inverseMatrix[3];
     vec3 eye = eyeCoord.xyz;
     vec3 exitPoint = eye;
-    vec3 direction = entryPoint - exitPoint;
+    vec3 direction = exitPoint - entryPoint;
     float directionLength = length(direction);
     vec3 deltaDir = normalize(direction) * stepSize;
     float deltaDirLength = length(deltaDir);
@@ -23,7 +23,7 @@ void main(void)
     for(int i = 0; i < 1.732 / stepSize; i++) { // 1.732 = cube diagonal
         voxelCoord += deltaDir;
         vec3 voxelValue = texture3D(myTexture3D, voxelCoord);
-        colorAcummulated += vec4(0.0, 0.0, 0.0, voxelValue.x) * stepSize * 1;
+        colorAcummulated += vec4(0.0, 0.0, 0.0, voxelValue.x) * stepSize * 2;
         traversedLength += deltaDirLength;
         if(voxelCoord.x > 1.0 || voxelCoord.y > 1.0 || voxelCoord.z > 1.0
                 || voxelCoord.x < 0.0 || voxelCoord.y < 0.0 || voxelCoord.z < 0.0) {
