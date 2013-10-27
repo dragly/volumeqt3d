@@ -294,54 +294,10 @@ void VolumeShaderProgramEffect::afterLink()
 //                      value.stride(), value.data());
 
     GLuint g_volTexObj;
-    FILE *fp;
-    GLuint w = 256;
-    GLuint h = 256;
-    GLuint d = 225;
-    size_t size = w * h * d;
-    GLubyte *data = new GLubyte[size];			  // 8bit
-    if (!(fp = fopen("qml/volumeqt3d/head256.raw", "rb")))
-    {
-        cout << "Error: opening .raw file failed" << endl;
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        cout << "OK: open .raw file successed" << endl;
-    }
-    if ( fread(data, sizeof(char), size, fp)!= size)
-    {
-        cout << "Error: read .raw file failed" << endl;
-        exit(1);
-    }
-    else
-    {
-        cout << "OK: read .raw file successed" << endl;
-    }
-    fclose(fp);
-
-//    for(GLuint i = 0; i < w; i++) {
-//        for(GLuint j = 0; j < h; j++) {
-//            for(GLuint k = 0; k < d; k++) {
-//                double x = -1 + i / double(w);
-//                double y = -1 + j / double(h);
-//                double z = -1 + k / double(d);
-
-//                double xw = exp(-x*x)*3*M_PI;
-//                double yw = exp(-0.2*y*y)*M_PI;
-//                double zw = 3*M_PI;
-
-//                double fx = sin(xw*x)*sin(xw*x);
-//                double fy = sin(yw*y)*sin(yw*y)*exp(-y*y);
-//                double fz = sin(zw*z)*sin(zw*z)*exp(-z*z);
-
-//                double result = fx * fy * fz;
-//                data[i*h*d + j*d + k] = 255 * result;
-////                                qDebug() << r << " " << theta << " " << phi << " " << data[i*h*d + j*d + k];
-//            }
-//        }
-//    }
-//    qDebug() << "Data loaded";
+    GLushort *data = parent.data()->texture3Ddata().data;
+    GLuint w = parent.data()->texture3Ddata().width;
+    GLuint h = parent.data()->texture3Ddata().height;
+    GLuint d = parent.data()->texture3Ddata().depth;
 
     glGenTextures(1, &g_volTexObj);
     // bind 3D texture target
@@ -353,9 +309,8 @@ void VolumeShaderProgramEffect::afterLink()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     // pixel transfer happens here from client to OpenGL server
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE,data);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, w, h, d, 0, GL_LUMINANCE, GL_UNSIGNED_SHORT,data);
 
-    delete []data;
     cout << "volume texture created" << endl;
     program()->setUniformValue(m_texture3DuniformValue, 0);
     // End Texture3D stuff
@@ -895,6 +850,21 @@ void VolumeShaderProgram::applyTo(QGLSceneNode *node)
     node->setUserEffect(d->effect);
 }
 
+QUrl VolumeShaderProgram::texture3D() const
+{
+    return m_texture3D;
+}
+
+QUrl VolumeShaderProgram::vertexShaderSource() const
+{
+    return m_vertexShaderSource;
+}
+
+QUrl VolumeShaderProgram::fragmentShaderSource() const
+{
+    return m_fragmentShaderSource;
+}
+
 /*!
   \internal
   Mark all properties as dirty to be re-uploaded in the next update
@@ -911,6 +881,84 @@ void VolumeShaderProgram::markAllPropertiesDirty()
 void VolumeShaderProgram::markPropertyDirty(int property)
 {
     d->effect->setPropertyDirty(property);
+}
+
+void VolumeShaderProgram::setTexture3D(QUrl arg)
+{
+    if (m_texture3D != arg) {
+        m_texture3D = arg;
+        loadTexture3D();
+        emit texture3DChanged(arg);
+    }
+}
+
+bool VolumeShaderProgram::loadTexture3D() {
+    FILE *fp;
+    GLuint w = 150;
+    GLuint h = 150;
+    GLuint d = 276;
+    size_t size = w * h * d;
+    GLushort *data = new GLushort[size];			  // 8bit
+    if (!(fp = fopen(m_texture3D.path().toStdString().c_str(), "rb")))
+    {
+        cout << "Error: opening .raw file failed" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "OK: open .raw file successed" << endl;
+    }
+    if ( fread(data, sizeof(GLushort), size, fp)!= size)
+    {
+        cout << "Error: read .raw file failed" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "OK: read .raw file successed" << endl;
+    }
+    fclose(fp);
+    m_texture3Ddata.data = data;
+    m_texture3Ddata.width = w;
+    m_texture3Ddata.height = h;
+    m_texture3Ddata.depth = d;
+    return true;
+}
+
+const Texture3D& VolumeShaderProgram::texture3Ddata() const {
+    return m_texture3Ddata;
+}
+
+void VolumeShaderProgram::setVertexShaderSource(QUrl arg)
+{
+    if (m_vertexShaderSource != arg) {
+        m_vertexShaderSource = arg;
+        QFile file(arg.path());
+        QString vertexShaderFileContents;
+        if (file.open(QIODevice::ReadOnly)) {
+            vertexShaderFileContents = file.readAll();
+        } else {
+            qWarning() << "VolumeShaderProgram::setVertexShaderSource: could not open " << arg;
+        }
+        setVertexShader(vertexShaderFileContents);
+        emit vertexShaderSourceChanged(arg);
+    }
+}
+
+void VolumeShaderProgram::setFragmentShaderSource(QUrl arg)
+{
+    if (m_fragmentShaderSource != arg) {
+        m_fragmentShaderSource = arg;
+        QFile file(arg.path());
+        QString fragmentShaderFileContents;
+        if (file.open(QIODevice::ReadOnly)) {
+            fragmentShaderFileContents = file.readAll();
+        } else {
+            qWarning() << "VolumeShaderProgram::setFragmentShaderSource: could not open " << arg;
+        }
+        setFragmentShader(fragmentShaderFileContents);
+        emit fragmentShaderSourceChanged(arg);
+    }
 }
 
 /*!
